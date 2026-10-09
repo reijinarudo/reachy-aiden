@@ -10,7 +10,7 @@ Out of the box, the Reachy Mini conversation app talks, moves, and sees, but eac
 
 ## Demo
 
-[Add a short video link or GIF here.]
+[![Aiden (cloud) and Rose (local) in conversation](https://img.youtube.com/vi/L9EhXOoIOt4/hqdefault.jpg)](https://youtu.be/L9EhXOoIOt4)
 
 ## What you get
 
