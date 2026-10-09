@@ -1,0 +1,85 @@
+#!/bin/bash
+# companion-switch: change the robot's voice backend in one command.
+#
+#   companion-switch                show the current backend
+#   companion-switch huggingface    Pollen's hosted server (alias: hf). No key needed.
+#   companion-switch openai         OpenAI Realtime. Needs OPENAI_API_KEY.
+#   companion-switch gemini         Google Gemini Live. Needs GEMINI_API_KEY.
+#
+# Each switch:
+#   1. sets BACKEND_PROVIDER in /etc/reachy-companion/companion.env
+#   2. runs companion-reapply, which writes the app's .env (provider, model,
+#      connection mode, keys) and the matching voice.txt
+#   3. refreshes memories from today's log
+#   4. restarts the conversation app and checks that the restart was accepted
+#
+# For huggingface, the connection mode is set from HF_REALTIME_CONNECTION_MODE
+# in companion.env (default "deployed", Pollen's cloud). This avoids the
+# trap where the provider says huggingface but traffic still goes to a local
+# server address left over from an earlier setup.
+set -e
+
+CONFIG=/etc/reachy-companion/companion.env
+DAEMON_URL="http://localhost:8000"
+APP_ENV=/venvs/apps_venv/lib/python3.12/site-packages/reachy_mini_conversation_app/.env
+
+get() { grep -E "^$1=" "$2" 2>/dev/null | tail -1 | cut -d= -f2- | tr -d '"'"'"; }
+
+case "${1:-}" in
+    hf|huggingface) BACKEND=huggingface ;;
+    openai)         BACKEND=openai ;;
+    gemini)         BACKEND=gemini ;;
+    "")
+        echo "Backend:          $(get BACKEND_PROVIDER "$APP_ENV")"
+        echo "Model:            $(get MODEL_NAME "$APP_ENV")"
+        echo "HF connection:    $(get HF_REALTIME_CONNECTION_MODE "$APP_ENV")"
+        echo
+        echo "Usage: companion-switch huggingface | openai | gemini"
+        exit 0
+        ;;
+    *)
+        echo "Unknown backend: $1"
+        echo "Usage: companion-switch huggingface | openai | gemini"
+        exit 1
+        ;;
+esac
+
+if [ "$BACKEND" = "openai" ] && [ -z "$(sudo bash -c "grep -E '^OPENAI_API_KEY=.+' $CONFIG")" ]; then
+    echo "OPENAI_API_KEY is empty in $CONFIG. Add it, then run this again."
+    exit 1
+fi
+if [ "$BACKEND" = "gemini" ] && [ -z "$(sudo bash -c "grep -E '^GEMINI_API_KEY=.+' $CONFIG")" ]; then
+    echo "GEMINI_API_KEY is empty in $CONFIG. Add it, then run this again."
+    exit 1
+fi
+
+sudo sed -i "s|^BACKEND_PROVIDER=.*|BACKEND_PROVIDER=${BACKEND}|" "$CONFIG"
+set +e
+out=$(sudo /venvs/apps_venv/bin/python /home/pollen/companion/apply_patches.py 2>&1)
+rc=$?
+set -e
+if [ "$rc" != "0" ] && [ "$rc" != "2" ]; then
+    echo "$out"
+    exit 1
+fi
+echo "$out" | grep -E "WARNING|ERROR" || true
+echo "Backend set to ${BACKEND}."
+
+echo "Refreshing memories (can take up to a minute)..."
+if sudo systemctl start memory-catchup.service; then
+    echo "Memory refresh done."
+else
+    echo "WARNING: memory refresh failed. Continuing. Check: sudo journalctl -u memory-catchup.service -n 30"
+fi
+
+echo "Restarting the conversation app..."
+code=$(curl -s -o /tmp/companion-switch-response.txt -w "%{http_code}" -X POST "${DAEMON_URL}/api/apps/restart-current-app") || code="000"
+if [ "$code" != "200" ]; then
+    echo "Restart returned HTTP ${code}: $(cat /tmp/companion-switch-response.txt 2>/dev/null)"
+    [ "$code" = "000" ] && echo "The daemon did not answer. Check: sudo systemctl status reachy-mini-daemon"
+    echo "If no app is running, start it with:"
+    echo "  curl -s -X POST ${DAEMON_URL}/api/apps/start-app/reachy_mini_conversation_app"
+    exit 1
+fi
+echo "Done. Give it about 10 seconds, then say hello."
+echo "To confirm what loaded:  sudo journalctl --since '1 minute ago' --no-pager | grep -i 'backend'"

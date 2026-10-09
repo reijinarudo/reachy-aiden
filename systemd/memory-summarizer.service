@@ -1,0 +1,9 @@
+[Unit]
+Description=Summarize yesterday's conversation log into memories
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/reachy-companion/companion.env
+ExecStart=/venvs/apps_venv/bin/python /home/pollen/companion/memory-summarizer.py
+User=root

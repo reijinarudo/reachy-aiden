@@ -1,0 +1,23 @@
+#!/bin/bash
+# One-screen health check for the companion setup.
+APP_ENV=/venvs/apps_venv/lib/python3.12/site-packages/reachy_mini_conversation_app/.env
+get() { grep -E "^$1=" "$2" 2>/dev/null | tail -1 | cut -d= -f2-; }
+
+echo "== Backend"
+echo "  provider: $(sudo bash -c "grep -E '^BACKEND_PROVIDER=' $APP_ENV | cut -d= -f2")"
+echo "  HF mode:  $(sudo bash -c "grep -E '^HF_REALTIME_CONNECTION_MODE=' $APP_ENV | cut -d= -f2")"
+echo
+echo "== Conversation app"
+curl -s http://localhost:8000/api/apps/current-app-status | python3 -m json.tool 2>/dev/null | head -12 || echo "  daemon not reachable"
+echo
+echo "== Services"
+for s in reachy-mini-daemon companion-boot-guard reachy-mini-conversation-autostart companion-mic-unmute \
+         conversation-logger instructions-watcher memory-catchup memory-summarizer.timer; do
+    printf "  %-38s %s\n" "$s" "$(systemctl is-active "$s" 2>/dev/null) / $(systemctl is-enabled "$s" 2>/dev/null)"
+done
+echo
+echo "== Microphone switch ('Headset',0 should show [on])"
+amixer -c 0 sget 'Headset',0 2>/dev/null | grep -E "Front (Left|Right):" | sed 's/^/  /'
+echo
+echo "== Patches"
+sudo /venvs/apps_venv/bin/python /home/pollen/companion/apply_patches.py --check | sed -n '4,40p' | sed 's/^/ /'

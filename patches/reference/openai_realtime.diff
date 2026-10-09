@@ -1,0 +1,11 @@
+--- a/reachy_mini_conversation_app/openai_realtime.py
++++ b/reachy_mini_conversation_app/openai_realtime.py
+@@ -141,7 +141,7 @@
+                 input=RealtimeAudioConfigInputParam(
+                     format=AudioPCM(type="audio/pcm", rate=24000),
+                     transcription=AudioTranscriptionParam(model="gpt-4o-transcribe", language="en"),
+-                    turn_detection=ServerVad(type="server_vad", interrupt_response=True),
++                    turn_detection=ServerVad(type="server_vad", interrupt_response=True, silence_duration_ms=800, threshold=0.7),
+                 ),
+                 output=RealtimeAudioConfigOutputParam(
+                     format=AudioPCM(type="audio/pcm", rate=24000),

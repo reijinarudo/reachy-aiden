@@ -1,0 +1,36 @@
+--- a/reachy_mini_conversation_app/camera_worker.py
++++ b/reachy_mini_conversation_app/camera_worker.py
+@@ -30,7 +30,7 @@
+         self._stop_event = threading.Event()
+         self._thread: threading.Thread | None = None
+ 
+-        self.is_head_tracking_enabled = True
++        self.is_head_tracking_enabled = False
+         self.face_tracking_offsets: List[float] = [
+             0.0,
+             0.0,
+@@ -140,17 +140,16 @@
+                             # The camera FOV is tighter than the motion model expects
+                             translation *= 0.6
+                             rotation *= 0.6
+-
++                            smoothing = 0.15
+                             with self.face_tracking_lock:
+                                 self.face_tracking_offsets = [
+-                                    translation[0],
+-                                    translation[1],
+-                                    translation[2],
+-                                    rotation[0],
+-                                    rotation[1],
+-                                    rotation[2],
++                                    self.face_tracking_offsets[0] * (1 - smoothing) + translation[0] * smoothing,
++                                    self.face_tracking_offsets[1] * (1 - smoothing) + translation[1] * smoothing,
++                                    self.face_tracking_offsets[2] * (1 - smoothing) + translation[2] * smoothing,
++                                    self.face_tracking_offsets[3] * (1 - smoothing) + rotation[0] * smoothing,
++                                    self.face_tracking_offsets[4] * (1 - smoothing) + rotation[1] * smoothing,
++                                    self.face_tracking_offsets[5] * (1 - smoothing) + rotation[2] * smoothing,
+                                 ]
+-
+                         elif self.last_face_detected_time is None or self.last_face_detected_time == current_time:
+                             pass
+ 

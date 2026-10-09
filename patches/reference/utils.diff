@@ -1,0 +1,11 @@
+--- a/reachy_mini_conversation_app/utils.py
++++ b/reachy_mini_conversation_app/utils.py
+@@ -25,7 +25,7 @@
+     parser.add_argument(
+         "--head-tracker",
+         choices=["yolo", "mediapipe"],
+-        default=None,
++        default="mediapipe",
+         help=(
+             "Optional head-tracking backend: yolo uses a local face detector in a subprocess, "
+             "mediapipe uses reachy_mini_toolbox in process. Disabled by default."

@@ -1,0 +1,13 @@
+[Unit]
+Description=Re-apply reachy-companion changes if an update removed them
+After=reachy-mini-daemon.service
+Wants=reachy-mini-daemon.service
+Before=reachy-mini-conversation-autostart.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/pollen/companion/boot-guard.sh
+User=root
+
+[Install]
+WantedBy=multi-user.target

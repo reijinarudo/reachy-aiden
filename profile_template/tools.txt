@@ -1,0 +1,20 @@
+# Tools this profile may use. One name per line.
+# Built-in tools from the conversation app:
+camera
+head_tracking
+move_head
+stop_dance
+stop_emotion
+# Add "dance" and "play_emotion" for a livelier robot. They are left out here
+# because they make the robot move on its own more often.
+#
+# Companion tools from /home/pollen/tools (loaded automatically as well):
+get_time
+weather
+shutdown
+get_architecture
+mic_gain
+audio_controls
+recall_memories
+# Optional, after following extras/calendar/README.md:
+# get_calendar

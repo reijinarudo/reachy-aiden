@@ -1,0 +1,37 @@
+# Your configuration and keys
+companion.env
+.env
+*.env
+!.env.example
+config.local.*
+
+# Data the robot creates (never commit)
+conversation-logs/
+companion-memories/
+*-memories/
+*.jsonl
+secrets/
+gcal_*.json
+client_secret*.json
+
+# Logs, caches, backups
+*.log
+__pycache__/
+*.pyc
+*.bak
+*.bak.*
+companion-backups/
+
+# Media and model files
+recordings/
+*.wav
+*.mp3
+*.mp4
+*.safetensors
+*.gguf
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

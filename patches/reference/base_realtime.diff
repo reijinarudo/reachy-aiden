@@ -1,0 +1,11 @@
+--- a/reachy_mini_conversation_app/base_realtime.py
++++ b/reachy_mini_conversation_app/base_realtime.py
+@@ -695,7 +695,7 @@
+ 
+                 # Start the response sender worker
+                 response_sender_task = asyncio.create_task(self._response_sender_loop(), name="response-sender")
+-
++                await self._safe_response_create(response={"instructions": "Say exactly: Hello world. Nothing else. No commentary. No additional words."})
+                 async for event in self.connection:
+                     logger.debug("Realtime event: %s", event.type)
+                     if event.type == "input_audio_buffer.speech_started":

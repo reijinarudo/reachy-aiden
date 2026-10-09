@@ -1,0 +1,13 @@
+[Unit]
+Description=Start the conversation app at boot, with no desktop app needed
+After=reachy-mini-daemon.service network-online.target memory-catchup.service companion-boot-guard.service
+Wants=network-online.target memory-catchup.service companion-boot-guard.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/pollen/companion/autostart-conversation.sh
+User=pollen
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

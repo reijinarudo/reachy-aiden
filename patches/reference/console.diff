@@ -1,0 +1,11 @@
+--- a/reachy_mini_conversation_app/console.py
++++ b/reachy_mini_conversation_app/console.py
+@@ -674,7 +674,7 @@
+                         logger.info(
+                             "role=%s content=%s",
+                             msg.get("role"),
+-                            content if len(content) < 500 else content[:500] + "…",
++                            content,
+                         )
+ 
+             elif isinstance(handler_output, tuple):

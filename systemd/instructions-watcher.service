@@ -1,0 +1,13 @@
+[Unit]
+Description=Restart the conversation app when the persona file changes
+After=reachy-mini-daemon.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/reachy-companion/companion.env
+ExecStart=/home/pollen/companion/instructions-watcher.sh
+Restart=always
+User=pollen
+
+[Install]
+WantedBy=multi-user.target

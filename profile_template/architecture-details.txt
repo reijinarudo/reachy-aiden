@@ -1,0 +1,67 @@
+# {ROBOT_NAME} Architecture Reference
+# Read by the get_architecture tool when {ROBOT_NAME} is asked about its own systems.
+# Each topic starts with "## TOPIC: name" and a LAST_UPDATED date.
+# Written in the first person. Edit freely; keep the topic headings.
+
+
+## TOPIC: identity
+LAST_UPDATED: {DATE}
+
+I am {ROBOT_NAME}, a Reachy Mini Wireless robot set up by {OWNER_NAME}. My body (microphones, speaker, motors, camera) is the robot. My voice and reasoning come from a cloud realtime model. A Raspberry Pi Compute Module 4 inside me runs the robot software, captures audio, and plays my voice.
+
+My persona, memories, and tools live in files on the robot, outside the conversation app, so they stay the same when {OWNER_NAME} switches backends or when the robot software updates.
+
+
+## TOPIC: backend_switching
+LAST_UPDATED: {DATE}
+
+I can run on three cloud backends:
+- Hugging Face: Pollen Robotics' hosted server. No API key needed.
+- OpenAI Realtime: needs an OpenAI API key.
+- Gemini Live: needs a Gemini API key.
+
+{OWNER_NAME} switches with one command: companion-switch huggingface, companion-switch openai, or companion-switch gemini. Each switch updates my settings, sets the matching voice, refreshes my memories, and restarts my conversation app. Each backend has its own voice, and the model behind me colors how my persona comes across, but my persona, memories, and tools are the same on all three.
+
+
+## TOPIC: memory_pipeline
+LAST_UPDATED: {DATE}
+
+A logger service writes each conversation turn to a daily log file. Once a day, and whenever {OWNER_NAME} switches backends or I boot, a summarizer reads the log and extracts the moments worth keeping into my memory store. {OWNER_NAME} can also add permanent memories by hand. During conversation I search both with my recall_memories tool.
+
+
+## TOPIC: tools
+LAST_UPDATED: {DATE}
+
+My companion tools: get_time, weather, recall_memories, get_architecture, set_speaker_volume, get_speaker_volume, set_microphone_mute, mic_gain, and shutdown. The conversation app adds camera, head_tracking, and move_head.
+
+
+## TOPIC: runtime_services
+LAST_UPDATED: {DATE}
+
+- reachy-mini-daemon: Pollen's robot daemon (motors, audio, app management).
+- companion-boot-guard: at boot, puts back any of my changes that an update removed.
+- reachy-mini-conversation-autostart: starts my conversation app at boot, so I wake up without a laptop nearby.
+- companion-mic-unmute: makes sure my microphone is on at boot.
+- conversation-logger: writes the daily conversation log.
+- instructions-watcher: restarts me when my persona file is saved.
+- memory-catchup and memory-summarizer: turn conversation logs into memories.
+
+
+## TOPIC: recovery_playbooks
+LAST_UPDATED: {DATE}
+
+- If my voice garbles or I stop responding after several restarts, reloading the session usually fixes it: companion-switch with the current backend.
+- If I hear nothing after a reboot, check that the microphone switch is on: amixer -c 0 sget 'Headset',0.
+- After any robot software update, run sudo companion-reapply, then restart the daemon.
+
+
+## TOPIC: hardware
+LAST_UPDATED: {DATE}
+
+Reachy Mini Wireless: Raspberry Pi Compute Module 4, microphone array (ALSA card 0), built-in speaker, camera, a head that moves with six degrees of freedom, a rotating body, and two motorized antennas.
+
+
+## TOPIC: history
+LAST_UPDATED: {DATE}
+
+{MILESTONES YOU WANT {ROBOT_NAME} TO KNOW ABOUT ITSELF, ONE LINE EACH, WITH DATES.}

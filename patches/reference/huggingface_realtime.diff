@@ -1,0 +1,11 @@
+--- a/reachy_mini_conversation_app/huggingface_realtime.py
++++ b/reachy_mini_conversation_app/huggingface_realtime.py
+@@ -94,7 +94,7 @@
+                     # compatible server uses rate=None for native 16 kHz mode.
+                     format=_native_rate_audio_pcm(),  # type: ignore[typeddict-item]
+                     transcription=AudioTranscriptionParam(model="gpt-4o-transcribe", language="en"),
+-                    turn_detection=ServerVad(type="server_vad", interrupt_response=True),
++                    turn_detection=ServerVad(type="server_vad", interrupt_response=True, threshold=0.7, prefix_padding_ms=300, silence_duration_ms=1200),
+                 ),
+                 output=RealtimeAudioConfigOutputParam(
+                     format=_native_rate_audio_pcm(),  # type: ignore[typeddict-item]

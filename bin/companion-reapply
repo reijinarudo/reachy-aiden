@@ -1,0 +1,9 @@
+#!/bin/bash
+# Re-apply all companion changes. Run after any Reachy Mini app or firmware
+# update, or after editing /etc/reachy-companion/companion.env.
+#   sudo companion-reapply          apply and report
+#   sudo companion-reapply --check  report only
+/venvs/apps_venv/bin/python /home/pollen/companion/apply_patches.py "$@"
+rc=$?
+[ "$rc" = "2" ] && exit 0
+exit $rc

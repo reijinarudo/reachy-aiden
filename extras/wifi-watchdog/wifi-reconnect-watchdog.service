@@ -1,0 +1,13 @@
+[Unit]
+Description=Restart the conversation app after a Wi-Fi reconnect
+After=reachy-mini-daemon.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/reachy-companion/companion.env
+ExecStart=/home/pollen/companion/wifi-reconnect-watchdog.sh
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

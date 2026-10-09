@@ -1,0 +1,15 @@
+[Unit]
+Description=Force microphone capture channels unmuted at boot
+After=reachy-mini-daemon.service
+Wants=reachy-mini-daemon.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 5
+# 'Headset',0 is the capture on/off switch. 'Headset',1 is the capture level (0 to 60).
+ExecStart=/usr/bin/amixer -c 0 sset 'Headset',0 cap
+ExecStart=/usr/bin/amixer -c 0 sset 'Headset',1 60
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

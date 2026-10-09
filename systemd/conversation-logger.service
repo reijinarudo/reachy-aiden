@@ -1,0 +1,13 @@
+[Unit]
+Description=Capture conversation turns to a daily log for memory extraction
+After=reachy-mini-daemon.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/reachy-companion/companion.env
+ExecStart=/usr/bin/python3 /home/pollen/companion/conversation-logger.py
+Restart=always
+User=pollen
+
+[Install]
+WantedBy=multi-user.target

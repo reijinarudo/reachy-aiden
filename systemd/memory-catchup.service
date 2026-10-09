@@ -1,0 +1,14 @@
+[Unit]
+Description=Turn recent conversation logs into memories (runs at boot and on backend switch)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/reachy-companion/companion.env
+ExecStart=/venvs/apps_venv/bin/python /home/pollen/companion/memory-catchup.py
+User=root
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

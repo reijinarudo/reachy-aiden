@@ -1,0 +1,3 @@
+#!/bin/bash
+# Add a permanent memory. See: companion-add-memory --help
+exec /venvs/apps_venv/bin/python /home/pollen/companion/add-memory.py "$@"
